@@ -8,6 +8,9 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import FarmRegistration from './pages/FarmRegistration';
+import Features from './pages/Features';
+import About from './pages/About';
+import Contact from './pages/Contact';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, isLoading } = useAuth();
@@ -51,6 +54,9 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/farm-registration" element={<FarmRegistration />} />
+          <Route path="/features" element={<Features />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={
             <PublicRoute>
               <Login />
