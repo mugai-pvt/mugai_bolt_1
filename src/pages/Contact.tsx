@@ -406,7 +406,7 @@ const Contact: React.FC = () => {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-gray-700">Email Inquiries</span>
-                    <span className="font-medium text-green-600">< 2 hours</span>
+                    <span className="font-medium text-green-600">{'< 2 hours'}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-700">Phone Support</span>
@@ -414,11 +414,11 @@ const Contact: React.FC = () => {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-700">Technical Issues</span>
-                    <span className="font-medium text-green-600">< 30 minutes</span>
+                    <span className="font-medium text-green-600">{'< 30 minutes'}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-700">On-site Support</span>
-                    <span className="font-medium text-green-600">< 24 hours</span>
+                    <span className="font-medium text-green-600">{'< 24 hours'}</span>
                   </div>
                 </div>
               </div>
