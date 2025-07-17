@@ -1,5 +1,5 @@
 interface WebhookData {
-  type: 'login' | 'signup' | 'farm_registration';
+  type: 'login' | 'signup' | 'farm_registration' | 'contact_form';
   name?: string;
   email: string;
   provider: 'email' | 'google';
@@ -7,6 +7,8 @@ interface WebhookData {
   userAgent: string;
   ipAddress?: string;
   farmData?: any;
+  contactData?: any;
+  emailData?: any;
 }
 
 const WEBHOOK_URL = 'https://kishovarmam.app.n8n.cloud/webhook-test/Credentials';

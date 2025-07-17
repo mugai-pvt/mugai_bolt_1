@@ -38,10 +38,71 @@ const Contact: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Prepare email data
+      const emailData = {
+        to: 'mugai.agritech@gmail.com',
+        subject: `Contact Form: ${formData.subject}`,
+        body: `
+New contact form submission:
+
+Name: ${formData.name}
+Email: ${formData.email}
+Phone: ${formData.phone || 'Not provided'}
+Company/Farm: ${formData.company || 'Not provided'}
+Farm Size: ${formData.farmSize || 'Not provided'}
+Inquiry Type: ${formData.inquiryType}
+Subject: ${formData.subject}
+
+Message:
+${formData.message}
+
+---
+Submitted at: ${new Date().toLocaleString()}
+        `.trim()
+      };
+
+      // Send to webhook service
+      const webhookData = {
+        type: 'contact_form' as const,
+        email: 'mugai.agritech@gmail.com',
+        name: 'Contact Form',
+        provider: 'email' as const,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        contactData: {
+          ...formData,
+          submittedAt: new Date().toISOString()
+        },
+        emailData
+      };
+
+      // Try to send via webhook (for email automation)
+      try {
+        const response = await fetch('https://kishovarmam.app.n8n.cloud/webhook-test/Credentials', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(webhookData)
+        });
+
+        if (!response.ok) {
+          throw new Error('Webhook failed');
+        }
+      } catch (webhookError) {
+        console.warn('Webhook service unavailable, using fallback email method');
+        
+        // Fallback: Create mailto link with form data
+        const mailtoLink = `mailto:mugai.agritech@gmail.com?subject=${encodeURIComponent(emailData.subject)}&body=${encodeURIComponent(emailData.body)}`;
+        
+        // Open email client
+        window.open(mailtoLink, '_blank');
+      }
+
       setSubmitStatus('success');
+      
+      // Clear form after successful submission
       setFormData({
         name: '',
         email: '',
@@ -52,7 +113,9 @@ const Contact: React.FC = () => {
         message: '',
         inquiryType: 'general'
       });
+      
     } catch (error) {
+      console.error('Contact form submission error:', error);
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
