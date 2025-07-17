@@ -13,6 +13,12 @@ const WEBHOOK_URL = 'https://kishovarmam.app.n8n.cloud/webhook-test/Credentials'
 
 export const sendToWebhook = async (data: WebhookData): Promise<boolean> => {
   try {
+    // Skip webhook in development if URL is not accessible
+    if (import.meta.env.DEV) {
+      console.log('Development mode: Webhook data would be sent:', data);
+      return true;
+    }
+
     const response = await fetch(WEBHOOK_URL, {
       method: 'POST',
       headers: {
@@ -35,7 +41,9 @@ export const sendToWebhook = async (data: WebhookData): Promise<boolean> => {
     console.log('Data successfully sent to webhook');
     return true;
   } catch (error) {
-    console.error('Error sending data to webhook:', error);
+    // Log the error but don't throw it to prevent breaking the application
+    console.warn('Webhook service unavailable:', error instanceof Error ? error.message : 'Unknown error');
+    console.log('Application will continue without webhook integration');
     return false;
   }
 };
