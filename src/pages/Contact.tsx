@@ -64,16 +64,16 @@ const Contact: React.FC = () => {
     {
       icon: <Mail className="h-6 w-6" />,
       title: "Email Us",
-      details: "mugAIagritech@gmail.com",
+      details: "mugai.agritech@gmail.com",
       description: "Send us an email anytime",
-      action: "mailto:mugAIagritech@gmail.com"
+      action: "mailto:mugai.agritech@gmail.com"
     },
     {
       icon: <Phone className="h-6 w-6" />,
       title: "Call Us",
-      details: "+91 6381602372",
+      details: "+91 6385891759",
       description: "Mon-Fri 9AM-6PM IST",
-      action: "tel:+916381602372"
+      action: "tel:+916385891759"
     },
     {
       icon: <MapPin className="h-6 w-6" />,
@@ -127,7 +127,7 @@ const Contact: React.FC = () => {
       city: "Coimbatore",
       country: "India",
       address: "Technology Park, Coimbatore, Tamil Nadu 641014",
-      phone: "+91 6381602372",
+      phone: "+91 6385891759",
       email: "coimbatore@mugai.com",
       type: "Headquarters"
     },
@@ -563,7 +563,7 @@ const Contact: React.FC = () => {
               Start Free Trial
             </a>
             <a
-              href="tel:+916381602372"
+              href="tel:+916385891759"
               className="border-2 border-white text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-white hover:text-green-600 transition-colors"
             >
               Call Now
