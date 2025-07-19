@@ -30,6 +30,16 @@ const Navbar: React.FC = () => {
             >
               Home
             </Link>
+            {user && (
+              <Link
+                to="/dashboard"
+                className={`text-gray-700 hover:text-green-600 px-3 py-2 text-sm font-medium transition-colors ${
+                  isActive('/dashboard') ? 'text-green-600 border-b-2 border-green-600' : ''
+                }`}
+              >
+                Dashboard
+              </Link>
+            )}
             <Link
               to="/features"
               className={`text-gray-700 hover:text-green-600 px-3 py-2 text-sm font-medium transition-colors ${
@@ -122,6 +132,17 @@ const Navbar: React.FC = () => {
               >
                 Home
               </Link>
+              {user && (
+                <Link
+                  to="/dashboard"
+                  className={`block px-3 py-2 text-base font-medium transition-colors ${
+                    isActive('/dashboard') ? 'text-green-600 bg-green-50' : 'text-gray-700 hover:text-green-600'
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Dashboard
+                </Link>
+              )}
               <Link
                 to="/features"
                 className={`block px-3 py-2 text-base font-medium transition-colors ${
