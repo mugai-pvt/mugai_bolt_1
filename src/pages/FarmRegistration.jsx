@@ -17,38 +17,10 @@ import {
 } from 'lucide-react';
 import { sendToWebhook } from '../utils/webhookService';
 
-interface FormData {
-  // Personal Information
-  farmerName: string;
-  email: string;
-  phone: string;
-  address: string;
-  
-  // Farm Details
-  farmName: string;
-  farmLocation: string;
-  farmSize: string;
-  farmSizeUnit: 'acres' | 'hectares';
-  soilType: string;
-  cropTypes: string[];
-  
-  // Water Resources
-  waterSources: string[];
-  wellDepth: string;
-  waterQuality: string;
-  currentIrrigationMethod: string;
-  dailyWaterUsage: string;
-  
-  // Additional Information
-  farmingExperience: string;
-  challenges: string;
-  expectations: string;
-}
-
-const FarmRegistration: React.FC = () => {
+const FarmRegistration = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState({
     farmerName: '',
     email: '',
     phone: '',
@@ -68,7 +40,7 @@ const FarmRegistration: React.FC = () => {
     challenges: '',
     expectations: ''
   });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const { user, isLoading } = useAuth();
@@ -94,23 +66,23 @@ const FarmRegistration: React.FC = () => {
     'Manual Watering', 'Furrow Irrigation', 'None'
   ];
 
-  const handleInputChange = (field: keyof FormData, value: string | string[]) => {
+  const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
   };
 
-  const handleArrayToggle = (field: keyof FormData, value: string) => {
-    const currentArray = formData[field] as string[];
+  const handleArrayToggle = (field, value) => {
+    const currentArray = formData[field];
     const newArray = currentArray.includes(value)
       ? currentArray.filter(item => item !== value)
       : [...currentArray, value];
     handleInputChange(field, newArray);
   };
 
-  const validateStep = (step: number): boolean => {
-    const newErrors: Record<string, string> = {};
+  const validateStep = (step) => {
+    const newErrors = {};
 
     switch (step) {
       case 1:
@@ -164,7 +136,7 @@ const FarmRegistration: React.FC = () => {
     try {
       // Send farm registration data to webhook
       const farmRegistrationData = {
-        type: 'farm_registration' as const,
+        type: 'farm_registration',
         email: user.email,
         name: user.name,
         provider: user.provider,
@@ -209,14 +181,6 @@ const FarmRegistration: React.FC = () => {
     setTimeout(() => {
       navigate('/dashboard');
     }, 2000);
-  };
-
-  const handleGetStarted = () => {
-    if (!user) {
-      setShowAuthPrompt(true);
-      return;
-    }
-    // If user is authenticated, proceed with form
   };
 
   // Show loading state while checking authentication
@@ -452,7 +416,7 @@ const FarmRegistration: React.FC = () => {
           </label>
           <select
             value={formData.farmSizeUnit}
-            onChange={(e) => handleInputChange('farmSizeUnit', e.target.value as 'acres' | 'hectares')}
+            onChange={(e) => handleInputChange('farmSizeUnit', e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
           >
             <option value="acres">Acres</option>

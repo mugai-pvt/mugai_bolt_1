@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, Droplets, AlertCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { sendLoginData } from '../utils/webhookService';
 
-const Login: React.FC = () => {
+const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -12,7 +11,7 @@ const Login: React.FC = () => {
   const { login, loginWithGoogle, isLoading } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -48,20 +47,6 @@ const Login: React.FC = () => {
     } else {
       setError(result.error || 'Google login failed. Please try again.');
     }
-  };
-
-  // Show success message when login is successful
-  const showSuccessMessage = () => {
-    const successToast = document.createElement('div');
-    successToast.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg z-50';
-    successToast.textContent = 'Login successful! Redirecting...';
-    document.body.appendChild(successToast);
-    
-    setTimeout(() => {
-      if (document.body.contains(successToast)) {
-        document.body.removeChild(successToast);
-      }
-    }, 3000);
   };
 
   return (

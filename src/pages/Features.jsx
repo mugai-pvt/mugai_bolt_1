@@ -21,7 +21,7 @@ import {
   Database
 } from 'lucide-react';
 
-const Features: React.FC = () => {
+const Features = () => {
   const coreFeatures = [
     {
       icon: <Droplets className="h-8 w-8 text-blue-600" />,

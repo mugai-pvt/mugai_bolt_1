@@ -1,7 +1,7 @@
 import React from 'react';
 import { Droplets, Mail, Phone, MapPin, Github, Twitter, Linkedin } from 'lucide-react';
 
-const Footer: React.FC = () => {
+const Footer = () => {
   return (
     <footer className="bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -47,11 +47,11 @@ const Footer: React.FC = () => {
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <Mail className="h-4 w-4 text-green-500" />
-                <span className="text-gray-400 text-sm">mugAIagritech@gmail.com</span>
+                <span className="text-gray-400 text-sm">mugai.agritech@gmail.com</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Phone className="h-4 w-4 text-green-500" />
-                <span className="text-gray-400 text-sm">+91 6381602372</span>
+                <span className="text-gray-400 text-sm">+91 6385891759</span>
               </div>
               <div className="flex items-center space-x-2">
                 <MapPin className="h-4 w-4 text-green-500" />

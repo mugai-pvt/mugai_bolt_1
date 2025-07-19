@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { 
-  User as FirebaseUser,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
@@ -8,30 +7,12 @@ import {
   getRedirectResult,
   signOut,
   onAuthStateChanged,
-  updateProfile,
-  AuthError
+  updateProfile
 } from 'firebase/auth';
 import { auth, googleProvider } from '../config/firebase';
 import { sendLoginData, sendSignupData } from '../utils/webhookService';
 
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  provider: 'email' | 'google';
-  photoURL?: string;
-}
-
-interface AuthContextType {
-  user: User | null;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  loginWithGoogle: () => Promise<{ success: boolean; error?: string }>;
-  signup: (name: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  logout: () => Promise<void>;
-  isLoading: boolean;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -41,7 +22,7 @@ export const useAuth = () => {
   return context;
 };
 
-const convertFirebaseUser = (firebaseUser: FirebaseUser): User => {
+const convertFirebaseUser = (firebaseUser) => {
   return {
     id: firebaseUser.uid,
     email: firebaseUser.email || '',
@@ -51,7 +32,7 @@ const convertFirebaseUser = (firebaseUser: FirebaseUser): User => {
   };
 };
 
-const getFirebaseErrorMessage = (error: AuthError): string => {
+const getFirebaseErrorMessage = (error) => {
   switch (error.code) {
     case 'auth/user-not-found':
       return 'No account found with this email address.';
@@ -78,8 +59,8 @@ const getFirebaseErrorMessage = (error: AuthError): string => {
   }
 };
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -106,7 +87,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => unsubscribe();
   }, []);
 
-  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+  const login = async (email, password) => {
     setIsLoading(true);
     
     try {
@@ -127,12 +108,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(false);
       return { 
         success: false, 
-        error: getFirebaseErrorMessage(error as AuthError)
+        error: getFirebaseErrorMessage(error)
       };
     }
   };
 
-  const loginWithGoogle = async (): Promise<{ success: boolean; error?: string }> => {
+  const loginWithGoogle = async () => {
     setIsLoading(true);
     
     try {
@@ -142,7 +123,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         result = await signInWithPopup(auth, googleProvider);
       } catch (popupError) {
-        const error = popupError as AuthError;
+        const error = popupError;
         
         // If popup fails on mobile, try redirect
         if (error.code === 'auth/popup-blocked' || 
@@ -173,12 +154,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(false);
       return { 
         success: false, 
-        error: getFirebaseErrorMessage(error as AuthError)
+        error: getFirebaseErrorMessage(error)
       };
     }
   };
 
-  const signup = async (name: string, email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+  const signup = async (name, email, password) => {
     setIsLoading(true);
     
     try {
@@ -191,7 +172,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // Refresh the user object to get the updated display name
       const updatedUser = { ...userCredential.user, displayName: name };
-      setUser(convertFirebaseUser(updatedUser as FirebaseUser));
+      setUser(convertFirebaseUser(updatedUser));
       
       // Send signup data to webhook (non-blocking)
       sendSignupData(name, email, 'email').catch(error => 
@@ -205,12 +186,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(false);
       return { 
         success: false, 
-        error: getFirebaseErrorMessage(error as AuthError)
+        error: getFirebaseErrorMessage(error)
       };
     }
   };
 
-  const logout = async (): Promise<void> => {
+  const logout = async () => {
     try {
       await signOut(auth);
       setUser(null);

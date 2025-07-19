@@ -12,7 +12,7 @@ import Features from './pages/Features';
 import About from './pages/About';
 import Contact from './pages/Contact';
 
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const ProtectedRoute = ({ children }) => {
   const { user, isLoading } = useAuth();
   
   if (isLoading) {
@@ -29,7 +29,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   return user ? <>{children}</> : <Navigate to="/login" replace />;
 };
 
-const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const PublicRoute = ({ children }) => {
   const { user, isLoading } = useAuth();
   
   if (isLoading) {

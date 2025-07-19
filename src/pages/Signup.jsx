@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, Droplets, AlertCircle, User } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { sendSignupData } from '../utils/webhookService';
 
-const Signup: React.FC = () => {
+const Signup = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,7 +15,7 @@ const Signup: React.FC = () => {
   const { signup, loginWithGoogle, isLoading } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -74,20 +73,6 @@ const Signup: React.FC = () => {
     } else {
       setError(result.error || 'Google signup failed. Please try again.');
     }
-  };
-
-  // Show success message when signup is successful
-  const showSuccessMessage = () => {
-    const successToast = document.createElement('div');
-    successToast.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg z-50';
-    successToast.textContent = 'Account created successfully! Redirecting...';
-    document.body.appendChild(successToast);
-    
-    setTimeout(() => {
-      if (document.body.contains(successToast)) {
-        document.body.removeChild(successToast);
-      }
-    }, 3000);
   };
 
   return (

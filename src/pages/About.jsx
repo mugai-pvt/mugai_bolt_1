@@ -17,7 +17,7 @@ import {
   Mail
 } from 'lucide-react';
 
-const About: React.FC = () => {
+const About = () => {
   const stats = [
     { number: "10,000+", label: "Farms Connected", icon: <Globe className="h-6 w-6" /> },
     { number: "50M+", label: "Liters Water Saved", icon: <Leaf className="h-6 w-6" /> },

@@ -16,7 +16,7 @@ import {
   FileText
 } from 'lucide-react';
 
-const Contact: React.FC = () => {
+const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -28,13 +28,13 @@ const Contact: React.FC = () => {
     inquiryType: 'general'
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [submitStatus, setSubmitStatus] = useState('idle');
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     
@@ -64,10 +64,10 @@ Submitted at: ${new Date().toLocaleString()}
 
       // Send to webhook service
       const webhookData = {
-        type: 'contact_form' as const,
+        type: 'contact_form',
         email: 'mugai.agritech@gmail.com',
         name: 'Contact Form',
-        provider: 'email' as const,
+        provider: 'email',
         timestamp: new Date().toISOString(),
         userAgent: navigator.userAgent,
         contactData: {
@@ -191,7 +191,7 @@ Submitted at: ${new Date().toLocaleString()}
       country: "India",
       address: "Technology Park, Coimbatore, Tamil Nadu 641014",
       phone: "+91 6385891759",
-      email: "coimbatore@mugai.com",
+      email: "mugai.agritech@gmail.com",
       type: "Headquarters"
     },
     {

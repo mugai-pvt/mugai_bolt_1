@@ -32,49 +32,16 @@ import {
   RefreshCw
 } from 'lucide-react';
 
-interface SensorData {
-  id: string;
-  name: string;
-  value: number;
-  unit: string;
-  status: 'normal' | 'warning' | 'critical';
-  lastUpdated: string;
-  trend: 'up' | 'down' | 'stable';
-}
-
-interface ZoneData {
-  id: string;
-  name: string;
-  isActive: boolean;
-  soilMoisture: number;
-  temperature: number;
-  humidity: number;
-  lastWatered: string;
-  nextScheduled: string;
-  cropType: string;
-  waterUsage: number;
-}
-
-interface Recommendation {
-  id: string;
-  type: 'irrigation' | 'fertilizer' | 'pest' | 'weather' | 'maintenance';
-  priority: 'high' | 'medium' | 'low';
-  title: string;
-  description: string;
-  action: string;
-  timestamp: string;
-}
-
-const Dashboard: React.FC = () => {
+const Dashboard = () => {
   const { user } = useAuth();
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [systemStatus, setSystemStatus] = useState<'online' | 'offline' | 'maintenance'>('online');
+  const [systemStatus, setSystemStatus] = useState('online');
   const [autoMode, setAutoMode] = useState(true);
-  const [selectedZone, setSelectedZone] = useState<string>('zone1');
+  const [selectedZone, setSelectedZone] = useState('zone1');
   const [showRecommendations, setShowRecommendations] = useState(true);
 
   // Mock sensor data - in real app, this would come from your IoT backend
-  const [sensorData] = useState<SensorData[]>([
+  const [sensorData] = useState([
     {
       id: 'soil_moisture',
       name: 'Soil Moisture',
@@ -131,7 +98,7 @@ const Dashboard: React.FC = () => {
     }
   ]);
 
-  const [zones] = useState<ZoneData[]>([
+  const [zones] = useState([
     {
       id: 'zone1',
       name: 'Tomato Field A',
@@ -182,7 +149,7 @@ const Dashboard: React.FC = () => {
     }
   ]);
 
-  const [recommendations] = useState<Recommendation[]>([
+  const [recommendations] = useState([
     {
       id: '1',
       type: 'irrigation',
@@ -229,7 +196,7 @@ const Dashboard: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const handleZoneToggle = (zoneId: string) => {
+  const handleZoneToggle = (zoneId) => {
     // In real app, this would send command to IoT system
     console.log(`Toggling zone ${zoneId}`);
   };
@@ -244,7 +211,7 @@ const Dashboard: React.FC = () => {
     console.log('Refreshing sensor data');
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status) => {
     switch (status) {
       case 'normal': return 'text-green-600';
       case 'warning': return 'text-yellow-600';
@@ -253,7 +220,7 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const getStatusBgColor = (status: string) => {
+  const getStatusBgColor = (status) => {
     switch (status) {
       case 'normal': return 'bg-green-100';
       case 'warning': return 'bg-yellow-100';
@@ -262,7 +229,7 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityColor = (priority) => {
     switch (priority) {
       case 'high': return 'border-red-500 bg-red-50';
       case 'medium': return 'border-yellow-500 bg-yellow-50';
@@ -271,7 +238,7 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const getTrendIcon = (trend: string) => {
+  const getTrendIcon = (trend) => {
     switch (trend) {
       case 'up': return <TrendingUp className="h-4 w-4 text-green-500" />;
       case 'down': return <TrendingDown className="h-4 w-4 text-red-500" />;
@@ -279,7 +246,7 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const getRecommendationIcon = (type: string) => {
+  const getRecommendationIcon = (type) => {
     switch (type) {
       case 'irrigation': return <Droplets className="h-5 w-5 text-blue-500" />;
       case 'weather': return <Cloud className="h-5 w-5 text-gray-500" />;

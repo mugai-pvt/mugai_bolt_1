@@ -14,7 +14,7 @@ import {
   Clock
 } from 'lucide-react';
 
-const Landing: React.FC = () => {
+const Landing = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}

@@ -3,12 +3,12 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Droplets, User, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
-const Navbar: React.FC = () => {
+const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const location = useLocation();
   const { user, logout } = useAuth();
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path) => location.pathname === path;
 
   return (
     <nav className="bg-white shadow-lg sticky top-0 z-50">

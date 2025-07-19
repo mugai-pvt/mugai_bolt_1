@@ -1,19 +1,6 @@
-interface WebhookData {
-  type: 'login' | 'signup' | 'farm_registration' | 'contact_form';
-  name?: string;
-  email: string;
-  provider: 'email' | 'google';
-  timestamp: string;
-  userAgent: string;
-  ipAddress?: string;
-  farmData?: any;
-  contactData?: any;
-  emailData?: any;
-}
-
 const WEBHOOK_URL = 'https://kishovarmam.app.n8n.cloud/webhook-test/Credentials';
 
-export const sendToWebhook = async (data: WebhookData): Promise<boolean> => {
+export const sendToWebhook = async (data) => {
   try {
     // Skip webhook in development if URL is not accessible
     if (import.meta.env.DEV) {
@@ -50,7 +37,7 @@ export const sendToWebhook = async (data: WebhookData): Promise<boolean> => {
   }
 };
 
-export const sendLoginData = async (email: string, provider: 'email' | 'google', name?: string) => {
+export const sendLoginData = async (email, provider, name) => {
   return sendToWebhook({
     type: 'login',
     email,
@@ -61,7 +48,7 @@ export const sendLoginData = async (email: string, provider: 'email' | 'google',
   });
 };
 
-export const sendSignupData = async (name: string, email: string, provider: 'email' | 'google') => {
+export const sendSignupData = async (name, email, provider) => {
   return sendToWebhook({
     type: 'signup',
     name,
