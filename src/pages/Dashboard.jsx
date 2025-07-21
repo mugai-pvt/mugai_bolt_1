@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import apiService from '../services/api';
 import { 
   Droplets, 
   Thermometer, 
@@ -39,154 +40,12 @@ const Dashboard = () => {
   const [autoMode, setAutoMode] = useState(true);
   const [selectedZone, setSelectedZone] = useState('zone1');
   const [showRecommendations, setShowRecommendations] = useState(true);
-
-  // Mock sensor data - in real app, this would come from your IoT backend
-  const [sensorData] = useState([
-    {
-      id: 'soil_moisture',
-      name: 'Soil Moisture',
-      value: 72,
-      unit: '%',
-      status: 'normal',
-      lastUpdated: '2 min ago',
-      trend: 'stable'
-    },
-    {
-      id: 'temperature',
-      name: 'Temperature',
-      value: 28,
-      unit: '°C',
-      status: 'normal',
-      lastUpdated: '1 min ago',
-      trend: 'up'
-    },
-    {
-      id: 'humidity',
-      name: 'Humidity',
-      value: 65,
-      unit: '%',
-      status: 'normal',
-      lastUpdated: '3 min ago',
-      trend: 'down'
-    },
-    {
-      id: 'ph_level',
-      name: 'pH Level',
-      value: 6.8,
-      unit: 'pH',
-      status: 'normal',
-      lastUpdated: '5 min ago',
-      trend: 'stable'
-    },
-    {
-      id: 'light_intensity',
-      name: 'Light Intensity',
-      value: 850,
-      unit: 'lux',
-      status: 'normal',
-      lastUpdated: '1 min ago',
-      trend: 'up'
-    },
-    {
-      id: 'water_pressure',
-      name: 'Water Pressure',
-      value: 2.3,
-      unit: 'bar',
-      status: 'warning',
-      lastUpdated: '4 min ago',
-      trend: 'down'
-    }
-  ]);
-
-  const [zones] = useState([
-    {
-      id: 'zone1',
-      name: 'Tomato Field A',
-      isActive: true,
-      soilMoisture: 72,
-      temperature: 28,
-      humidity: 65,
-      lastWatered: '2 hours ago',
-      nextScheduled: '6:00 AM tomorrow',
-      cropType: 'Tomatoes',
-      waterUsage: 450
-    },
-    {
-      id: 'zone2',
-      name: 'Wheat Field B',
-      isActive: false,
-      soilMoisture: 45,
-      temperature: 26,
-      humidity: 58,
-      lastWatered: '8 hours ago',
-      nextScheduled: '4:00 PM today',
-      cropType: 'Wheat',
-      waterUsage: 320
-    },
-    {
-      id: 'zone3',
-      name: 'Vegetable Garden',
-      isActive: true,
-      soilMoisture: 68,
-      temperature: 29,
-      humidity: 70,
-      lastWatered: '1 hour ago',
-      nextScheduled: '7:00 AM tomorrow',
-      cropType: 'Mixed Vegetables',
-      waterUsage: 280
-    },
-    {
-      id: 'zone4',
-      name: 'Fruit Orchard',
-      isActive: false,
-      soilMoisture: 55,
-      temperature: 27,
-      humidity: 62,
-      lastWatered: '12 hours ago',
-      nextScheduled: '5:00 AM tomorrow',
-      cropType: 'Fruit Trees',
-      waterUsage: 600
-    }
-  ]);
-
-  const [recommendations] = useState([
-    {
-      id: '1',
-      type: 'irrigation',
-      priority: 'high',
-      title: 'Zone 2 Needs Watering',
-      description: 'Soil moisture in Wheat Field B has dropped to 45%. Consider immediate irrigation.',
-      action: 'Start irrigation for Zone 2',
-      timestamp: '5 minutes ago'
-    },
-    {
-      id: '2',
-      type: 'weather',
-      priority: 'medium',
-      title: 'Rain Expected Tomorrow',
-      description: 'Weather forecast shows 15mm rainfall expected. You may skip morning irrigation.',
-      action: 'Adjust irrigation schedule',
-      timestamp: '1 hour ago'
-    },
-    {
-      id: '3',
-      type: 'fertilizer',
-      priority: 'medium',
-      title: 'Nutrient Level Check',
-      description: 'pH levels in Zone 1 are optimal for nutrient absorption. Good time for fertilization.',
-      action: 'Apply fertilizer to Zone 1',
-      timestamp: '2 hours ago'
-    },
-    {
-      id: '4',
-      type: 'maintenance',
-      priority: 'low',
-      title: 'System Maintenance Due',
-      description: 'Regular system maintenance is due in 3 days. Schedule a technician visit.',
-      action: 'Schedule maintenance',
-      timestamp: '1 day ago'
-    }
-  ]);
+  const [loading, setLoading] = useState(true);
+  const [overview, setOverview] = useState({});
+  const [zones, setZones] = useState([]);
+  const [sensorData, setSensorData] = useState([]);
+  const [recommendations, setRecommendations] = useState([]);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -196,19 +55,121 @@ const Dashboard = () => {
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
+      setError('');
+
+      // Load all dashboard data in parallel
+      const [overviewData, zonesData, sensorsData, recommendationsData] = await Promise.all([
+        apiService.getDashboardOverview(),
+        apiService.getDashboardZones(),
+        apiService.getLatestSensorReadings(),
+        apiService.getRecommendations()
+      ]);
+
+      setOverview(overviewData.overview || {});
+      setZones(zonesData.zones || []);
+      setSensorData(sensorsData.sensors || []);
+      setRecommendations(recommendationsData.recommendations || []);
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+      setError('Failed to load dashboard data. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleZoneToggle = (zoneId) => {
-    // In real app, this would send command to IoT system
-    console.log(`Toggling zone ${zoneId}`);
+    toggleZoneIrrigation(zoneId);
+  };
+
+  const toggleZoneIrrigation = async (zoneId) => {
+    try {
+      const response = await apiService.toggleZoneIrrigation(zoneId);
+      
+      // Update local state
+      setZones(prevZones => 
+        prevZones.map(zone => 
+          zone.id === zoneId 
+            ? { ...zone, isActive: response.isActive }
+            : zone
+        )
+      );
+
+      // Show success message
+      const message = response.isActive ? 'Irrigation started' : 'Irrigation stopped';
+      showToast(message, 'success');
+    } catch (error) {
+      console.error('Error toggling irrigation:', error);
+      showToast('Failed to toggle irrigation. Please try again.', 'error');
+    }
   };
 
   const handleEmergencyStop = () => {
-    // Emergency stop all irrigation
-    console.log('Emergency stop activated');
+    emergencyStopAll();
+  };
+
+  const emergencyStopAll = async () => {
+    try {
+      const response = await apiService.emergencyStopAll();
+      
+      // Update all zones to inactive
+      setZones(prevZones => 
+        prevZones.map(zone => ({ ...zone, isActive: false }))
+      );
+
+      showToast(response.message, 'success');
+    } catch (error) {
+      console.error('Error during emergency stop:', error);
+      showToast('Failed to execute emergency stop. Please try again.', 'error');
+    }
   };
 
   const handleRefreshData = () => {
-    // Refresh sensor data
-    console.log('Refreshing sensor data');
+    loadDashboardData();
+  };
+
+  const showToast = (message, type = 'info') => {
+    const toast = document.createElement('div');
+    toast.className = `fixed top-4 right-4 px-4 py-2 rounded-md shadow-lg z-50 ${
+      type === 'success' ? 'bg-green-500 text-white' :
+      type === 'error' ? 'bg-red-500 text-white' :
+      'bg-blue-500 text-white'
+    }`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+      if (document.body.contains(toast)) {
+        document.body.removeChild(toast);
+      }
+    }, 3000);
+  };
+
+  const getTimeAgo = (dateString) => {
+    if (!dateString) return 'Never';
+    
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffMs = now - date;
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+
+    if (diffHours > 24) {
+      const diffDays = Math.floor(diffHours / 24);
+      return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+    } else if (diffHours > 0) {
+      return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+    } else if (diffMinutes > 0) {
+      return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
+    } else {
+      return 'Just now';
+    }
   };
 
   const getStatusColor = (status) => {
@@ -257,6 +218,17 @@ const Dashboard = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -294,7 +266,7 @@ const Dashboard = () => {
               <div>
                 <p className="text-sm text-gray-600">Active Zones</p>
                 <p className="text-2xl font-bold text-green-600">
-                  {zones.filter(z => z.isActive).length}/{zones.length}
+                  {overview.activeZones || `${zones.filter(z => z.isActive).length}/${zones.length}`}
                 </p>
               </div>
               <Activity className="h-8 w-8 text-green-500" />
@@ -305,7 +277,7 @@ const Dashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Water Usage Today</p>
-                <p className="text-2xl font-bold text-blue-600">1,650L</p>
+                <p className="text-2xl font-bold text-blue-600">{overview.waterUsageToday || 0}L</p>
               </div>
               <Droplets className="h-8 w-8 text-blue-500" />
             </div>
@@ -315,7 +287,7 @@ const Dashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Avg Soil Moisture</p>
-                <p className="text-2xl font-bold text-green-600">60%</p>
+                <p className="text-2xl font-bold text-green-600">{overview.avgSoilMoisture || 60}%</p>
               </div>
               <Target className="h-8 w-8 text-green-500" />
             </div>
@@ -325,7 +297,7 @@ const Dashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">System Efficiency</p>
-                <p className="text-2xl font-bold text-purple-600">94%</p>
+                <p className="text-2xl font-bold text-purple-600">{overview.systemEfficiency || 94}%</p>
               </div>
               <Zap className="h-8 w-8 text-purple-500" />
             </div>
@@ -424,7 +396,7 @@ const Dashboard = () => {
                         </div>
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-600">Last Watered:</span>
-                          <span className="font-medium">{zone.lastWatered}</span>
+                          <span className="font-medium">{getTimeAgo(zone.lastWatered)}</span>
                         </div>
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-600">Next Scheduled:</span>
@@ -509,10 +481,10 @@ const Dashboard = () => {
                                 {rec.priority}
                               </span>
                             </div>
-                            <p className="text-sm text-gray-600 mb-2">{rec.description}</p>
+                            <p className="text-sm text-gray-600 mb-2">{rec.description || rec.message}</p>
                             <div className="flex items-center justify-between">
                               <button className="text-xs text-green-600 hover:text-green-700 font-medium">
-                                {rec.action}
+                                {rec.action || rec.actionRequired}
                               </button>
                               <span className="text-xs text-gray-500">{rec.timestamp}</span>
                             </div>
@@ -520,6 +492,13 @@ const Dashboard = () => {
                         </div>
                       </div>
                     ))}
+                    {recommendations.length === 0 && (
+                      <div className="text-center py-8">
+                        <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-2" />
+                        <p className="text-gray-500">No recommendations at this time</p>
+                        <p className="text-sm text-gray-400">Your system is running optimally</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
